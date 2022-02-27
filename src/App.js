@@ -1,23 +1,55 @@
 import logo from './logo.svg';
 import './App.css';
+import { PowerBIEmbed } from 'powerbi-client-react';
+import {models} from 'powerbi-client'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <PowerBIEmbed
+        embedConfig={{
+          type: 'report', // Supported types: report, dashboard, tile, visual and qna
+          id: '<Report Id>',
+          embedUrl: '<Embed Url>',
+          accessToken: '<Access Token>',
+          tokenType: models.TokenType.Embed,
+          settings: {
+            panes: {
+              filters: {
+                expanded: false,
+                visible: false,
+              },
+            },
+            background: models.BackgroundType.Transparent,
+          },
+        }}
+        eventHandlers={
+          new Map([
+            [
+              'loaded',
+              function () {
+                console.log('Report loaded');
+              },
+            ],
+            [
+              'rendered',
+              function () {
+                console.log('Report rendered');
+              },
+            ],
+            [
+              'error',
+              function (event) {
+                console.log(event.detail);
+              },
+            ],
+          ])
+        }
+        cssClassName={'report-style-class'}
+        getEmbeddedComponent={(embeddedReport) => {
+          window.report = embeddedReport;
+        }}
+      />
     </div>
   );
 }
